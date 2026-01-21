@@ -1,11 +1,14 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = 1280;
-canvas.height = 720;
+/* 🔒 INTERNAL RESOLUTION FIX */
+const BASE_WIDTH = 1080;
+const BASE_HEIGHT = 1080;
+
+canvas.width = BASE_WIDTH;
+canvas.height = BASE_HEIGHT;
 
 let bgImage = null;
-let imgArea = null;
 let scaleMode = "fit";
 
 let fontSize = 18;
@@ -14,86 +17,73 @@ let currentColor = "#ffffff";
 
 let texts = [];
 let redoStack = [];
-let cursorX = 0;
-let cursorY = 0;
-const lineGap = 26;
-const colGap = 30;
+
+/* CURSOR RELATIF (0–1) */
+let cursorX = 0.05;
+let cursorY = 0.08;
+const lineGap = 0.035;
+const colGap = 0.04;
 
 function draw() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.clearRect(0,0,BASE_WIDTH,BASE_HEIGHT);
 
-  if (bgImage) {
-    drawImage();
-  }
+  if (bgImage) drawImage();
 
   texts.forEach(t => {
     ctx.font = `${t.bold ? "bold" : ""} ${t.size}px Arial`;
     ctx.fillStyle = t.color;
-    ctx.fillText(t.text, t.x, t.y);
+    ctx.fillText(
+      t.text,
+      t.x * BASE_WIDTH,
+      t.y * BASE_HEIGHT
+    );
   });
 }
 
 function drawImage() {
-  let sx=0, sy=0, sw=bgImage.width, sh=bgImage.height;
-  let dw=canvas.width, dh=canvas.height;
+  let sw = bgImage.width;
+  let sh = bgImage.height;
+  let sx = 0, sy = 0;
 
-  const imgRatio = bgImage.width / bgImage.height;
-  const canvasRatio = canvas.width / canvas.height;
-
-  if (scaleMode === "fit") {
-    const scale = Math.min(dw / sw, dh / sh);
-    dw = sw * scale;
-    dh = sh * scale;
-  }
-
-  if (scaleMode === "fill") {
-    const scale = Math.max(dw / sw, dh / sh);
-    dw = sw * scale;
-    dh = sh * scale;
-  }
+  const imgRatio = sw / sh;
+  const canvasRatio = BASE_WIDTH / BASE_HEIGHT;
 
   if (scaleMode === "crop") {
     if (imgRatio > canvasRatio) {
-      sw = bgImage.height * canvasRatio;
+      sw = sh * canvasRatio;
       sx = (bgImage.width - sw) / 2;
     } else {
-      sh = bgImage.width / canvasRatio;
+      sh = sw / canvasRatio;
       sy = (bgImage.height - sh) / 2;
     }
   }
 
-  const dx = (canvas.width - dw) / 2;
-  const dy = (canvas.height - dh) / 2;
+  ctx.drawImage(bgImage, sx, sy, sw, sh, 0, 0, BASE_WIDTH, BASE_HEIGHT);
 
-  ctx.drawImage(bgImage, sx, sy, sw, sh, dx, dy, dw, dh);
-
-  cursorX = dx + 20;
-  cursorY = dy + 30;
+  cursorX = 0.05;
+  cursorY = 0.08;
 }
 
 function addText() {
   const value = textInput.value.trim();
   if (!value) return;
 
-  ctx.font = `${bold ? "bold" : ""} ${fontSize}px Arial`;
-  const w = ctx.measureText(value).width;
-
-  if (cursorY + lineGap > canvas.height - 20) {
-    cursorY = 30;
-    cursorX += w + colGap;
-  }
-
   texts.push({
     text: value,
     size: fontSize,
     color: currentColor,
-    bold
+    bold,
+    x: cursorX,
+    y: cursorY
   });
 
-  texts[texts.length - 1].x = cursorX;
-  texts[texts.length - 1].y = cursorY;
-
   cursorY += lineGap;
+
+  if (cursorY > 0.95) {
+    cursorY = 0.08;
+    cursorX += colGap;
+  }
+
   draw();
 }
 
@@ -112,6 +102,7 @@ imageInput.onchange = e => {
 };
 
 addTextBtn.onclick = addText;
+
 undoBtn.onclick = () => { if(texts.length) redoStack.push(texts.pop()); draw(); };
 redoBtn.onclick = () => { if(redoStack.length) texts.push(redoStack.pop()); draw(); };
 

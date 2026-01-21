@@ -10,7 +10,7 @@
 
 <header class="header">
   <h1>SSRP Editor</h1>
-  <span>Roleplay Screenshot Tool</span>
+  <span>Professional Roleplay Screenshot Tool</span>
 </header>
 
 <div class="container">
@@ -19,7 +19,7 @@
     <input id="textInput" placeholder="*John takes out his phone" />
 
     <div class="row">
-      <button id="addTextBtn" disabled>Add</button>
+      <button id="addTextBtn" disabled class="primary">Add</button>
       <button id="undoBtn">Undo</button>
       <button id="redoBtn">Redo</button>
     </div>
@@ -29,6 +29,18 @@
       <button id="fsDownBtn">-</button>
       <strong id="fontSizeLabel">18</strong>
       <button id="fsUpBtn">+</button>
+    </div>
+
+    <div class="row">
+      <button id="whiteBtn" class="color white">Says</button>
+      <button id="purpleBtn" class="color purple">/me /do</button>
+    </div>
+
+    <div class="row toggle">
+      <label>
+        <input type="checkbox" id="cropToggle">
+        Center Crop
+      </label>
     </div>
 
     <div class="row">

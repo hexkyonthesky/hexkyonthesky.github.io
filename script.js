@@ -1,7 +1,7 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-/* 🔒 CANVAS ASLI */
+/* CANVAS ASLI */
 const SIZE = 1080;
 canvas.width = SIZE;
 canvas.height = SIZE;
@@ -23,7 +23,6 @@ const colGap = 260;
 
 function draw() {
   ctx.clearRect(0,0,SIZE,SIZE);
-
   if (bgImage) drawImage();
 
   texts.forEach(t => {
@@ -34,14 +33,10 @@ function draw() {
 }
 
 function drawImage() {
-  let sx = 0, sy = 0;
-  let sw = bgImage.width;
-  let sh = bgImage.height;
-
-  const imgRatio = sw / sh;
+  let sx=0, sy=0, sw=bgImage.width, sh=bgImage.height;
 
   if (scaleMode === "crop") {
-    if (imgRatio > 1) {
+    if (sw > sh) {
       sw = sh;
       sx = (bgImage.width - sw) / 2;
     } else {
@@ -51,7 +46,6 @@ function drawImage() {
   }
 
   ctx.drawImage(bgImage, sx, sy, sw, sh, 0, 0, SIZE, SIZE);
-
   cursorX = 40;
   cursorY = 80;
 }
@@ -60,22 +54,13 @@ function addText() {
   const value = textInput.value.trim();
   if (!value) return;
 
-  texts.push({
-    text: value,
-    size: fontSize,
-    color: currentColor,
-    bold,
-    x: cursorX,
-    y: cursorY
-  });
-
+  texts.push({ text:value, size:fontSize, color:currentColor, bold, x:cursorX, y:cursorY });
   cursorY += lineGap;
 
   if (cursorY > SIZE - 60) {
     cursorY = 80;
     cursorX += colGap;
   }
-
   draw();
 }
 
@@ -95,16 +80,8 @@ imageInput.onchange = e => {
 };
 
 addTextBtn.onclick = addText;
-
-undoBtn.onclick = () => {
-  if (texts.length) redoStack.push(texts.pop());
-  draw();
-};
-
-redoBtn.onclick = () => {
-  if (redoStack.length) texts.push(redoStack.pop());
-  draw();
-};
+undoBtn.onclick = () => { if(texts.length) redoStack.push(texts.pop()); draw(); };
+redoBtn.onclick = () => { if(redoStack.length) texts.push(redoStack.pop()); draw(); };
 
 fsUpBtn.onclick = () => { fontSize++; fontSizeLabel.textContent = fontSize };
 fsDownBtn.onclick = () => { fontSize--; fontSizeLabel.textContent = fontSize };
@@ -113,10 +90,7 @@ boldBtn.onclick = () => bold = !bold;
 whiteBtn.onclick = () => currentColor = "#ffffff";
 purpleBtn.onclick = () => currentColor = "#8b5cff";
 
-scalePreset.onchange = e => {
-  scaleMode = e.target.value;
-  draw();
-};
+scalePreset.onchange = e => { scaleMode = e.target.value; draw(); };
 
 saveBtn.onclick = () => {
   const a = document.createElement("a");

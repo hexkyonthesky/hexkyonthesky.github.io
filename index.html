@@ -3,53 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SSRP Editor</title>
-
-<!-- CSS -->
+<title>SSRP Editor PRO</title>
 <link rel="stylesheet" href="./style.css">
-
 </head>
 <body>
 
-<header class="header">
-  <h1>SSRP Editor</h1>
-  <p>Advanced Roleplay Image Tool</p>
+<header class="topbar">
+  <div class="logo">SSRP<span>PRO</span></div>
+  <div class="subtitle">Advanced Roleplay Image Editor</div>
 </header>
 
-<div class="app">
+<div class="layout">
 
-  <aside class="panel">
-    <input id="textInput" placeholder="*John takes out his phone">
+  <aside class="sidebar">
+    <input id="textInput" placeholder="*John pulls out his phone">
 
-    <div class="group">
-      <button id="addTextBtn">➕ Add</button>
-      <button id="undoBtn">↩ Undo</button>
-      <button id="redoBtn">↪ Redo</button>
+    <div class="btn-grid">
+      <button id="addTextBtn">ADD TEXT</button>
+      <button id="undoBtn">UNDO</button>
+      <button id="redoBtn">REDO</button>
     </div>
 
-    <div class="group">
-      <span>Font Size</span>
-      <button id="fsUpBtn">＋</button>
-      <button id="fsDownBtn">－</button>
-      <strong id="fontSizeLabel">18</strong>
+    <div class="font-control">
+      <span>FONT SIZE</span>
+      <div>
+        <button id="fsDownBtn">−</button>
+        <strong id="fontSizeLabel">18</strong>
+        <button id="fsUpBtn">+</button>
+      </div>
     </div>
 
-    <div class="group">
-      <button id="pickImageBtn">🖼 Background</button>
-      <button id="downloadBtn">💾 Save</button>
+    <div class="btn-grid">
+      <button id="pickImageBtn" class="neon">UPLOAD IMAGE</button>
+      <button id="downloadBtn" class="neon">SAVE PNG</button>
     </div>
 
-    <input type="file" id="imageInput" hidden>
+    <div class="note">
+      ⚠ Upload image first<br>
+      Text auto-fit inside image
+    </div>
+
+    <input type="file" id="imageInput" accept="image/*" hidden>
   </aside>
 
-  <main class="workspace">
+  <main class="canvas-wrap">
     <canvas id="canvas"></canvas>
   </main>
 
 </div>
 
 <footer class="footer">
-© 2026 Hengkiaaa — SSRP Editor
+© 2026 Hengkiaaa — SSRP Editor PRO
 </footer>
 
 <script src="./script.js"></script>

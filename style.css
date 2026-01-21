@@ -13,20 +13,19 @@ body {
   text-align: center;
   background: linear-gradient(90deg, #3b0066, #1a002f);
   border-bottom: 1px solid #6b1cff;
-  box-shadow: 0 0 18px #7a1cff66;
 }
 
 /* LAYOUT */
 .container {
   display: flex;
-  min-height: calc(100vh - 140px);
+  min-height: calc(100vh - 120px);
 }
 
 /* SIDEBAR */
 .controls {
   width: 280px;
   padding: 18px;
-  background: linear-gradient(180deg, rgba(30,0,45,.9), rgba(10,0,20,.9));
+  background: linear-gradient(180deg, #14001f, #0a0012);
   border-right: 1px solid #6b1cff55;
   display: flex;
   flex-direction: column;
@@ -65,8 +64,8 @@ button.primary {
 
 button:disabled { opacity: .4 }
 
-.color.white { background: linear-gradient(180deg, #fff, #ccc); color:#000 }
-.color.purple { background: linear-gradient(180deg, #c084ff, #6a00ff) }
+.color.white { background: #fff; color:#000 }
+.color.purple { background: #8b5cff }
 
 /* STAGE */
 .stage {
@@ -74,16 +73,18 @@ button:disabled { opacity: .4 }
   display: flex;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(circle, #08000f, #000);
+  background: #050008;
 }
 
-/* 🔒 CANVAS – NO STRETCH */
+/* 🔒 INI KUNCI UTAMA */
 canvas {
-  width: min(95vw, 95vh);
-  height: auto;
+  width: 90vmin;
+  height: 90vmin;
+  max-width: 600px;
+  max-height: 600px;
   background: #000;
   border-radius: 16px;
-  box-shadow: 0 0 35px #7a1cff88;
+  box-shadow: 0 0 30px #7a1cff88;
 }
 
 /* FOOTER */
@@ -96,10 +97,7 @@ canvas {
 
 /* MOBILE */
 @media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
-
+  .container { flex-direction: column }
   .controls {
     width: 100%;
     border-right: none;
@@ -107,6 +105,7 @@ canvas {
   }
 
   canvas {
-    width: 95vw;
+    width: 92vmin;
+    height: 92vmin;
   }
 }

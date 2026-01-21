@@ -4,13 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SSRP Editor</title>
-<link rel="stylesheet" href="style.css">
+
+<!-- CSS -->
+<link rel="stylesheet" href="./style.css">
+
 </head>
 <body>
 
-<header>
+<header class="header">
   <h1>SSRP Editor</h1>
-  <span>Advanced Roleplay Image Tool</span>
+  <p>Advanced Roleplay Image Tool</p>
 </header>
 
 <div class="app">
@@ -25,30 +28,30 @@
     </div>
 
     <div class="group">
-      <label>Font Size</label>
+      <span>Font Size</span>
       <button id="fsUpBtn">＋</button>
       <button id="fsDownBtn">－</button>
-      <span id="fontSizeLabel">18</span>
+      <strong id="fontSizeLabel">18</strong>
     </div>
 
     <div class="group">
-      <button id="pickImageBtn">🖼 Upload</button>
-      <button id="downloadBtn">💾 Download</button>
+      <button id="pickImageBtn">🖼 Background</button>
+      <button id="downloadBtn">💾 Save</button>
     </div>
 
     <input type="file" id="imageInput" hidden>
   </aside>
 
-  <main>
+  <main class="workspace">
     <canvas id="canvas"></canvas>
   </main>
 
 </div>
 
-<footer>
+<footer class="footer">
 © 2026 Hengkiaaa — SSRP Editor
 </footer>
 
-<script src="script.js"></script>
+<script src="./script.js"></script>
 </body>
 </html>

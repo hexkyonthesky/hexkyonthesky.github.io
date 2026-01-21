@@ -2,8 +2,14 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-canvas.width = Math.min(900, window.innerWidth * 0.7);
-canvas.height = Math.min(500, window.innerHeight * 0.6);
+function resizeCanvas() {
+  const maxWidth = window.innerWidth * 0.7;
+  const maxHeight = window.innerHeight * 0.6;
+  canvas.width = Math.min(900, maxWidth);
+  canvas.height = Math.min(500, maxHeight);
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
 let fontSize = 18;
 let items = [];
@@ -13,7 +19,15 @@ let bgImage = null;
 // ===== Draw Canvas =====
 function drawCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (bgImage) ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+  if (bgImage) {
+    // Scale image proportionally
+    let scale = Math.min(canvas.width / bgImage.width, canvas.height / bgImage.height);
+    let w = bgImage.width * scale;
+    let h = bgImage.height * scale;
+    let x = (canvas.width - w) / 2;
+    let y = (canvas.height - h) / 2;
+    ctx.drawImage(bgImage, x, y, w, h);
+  }
 
   items.forEach((item, idx) => {
     ctx.font = `${item.size}px Arial`;

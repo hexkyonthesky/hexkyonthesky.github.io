@@ -1,0 +1,35 @@
+body {
+  background: #121212;
+  color: #fff;
+  font-family: sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.title {
+  margin-top: 20px;
+}
+
+.controls {
+  margin: 20px auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+canvas {
+  border: 2px solid #fff;
+  margin-top: 20px;
+}
+
+.watermark {
+  font-size: 12px;
+  color: #777;
+  margin-top: 10px;
+}
+
+.imgur-link-container {
+  margin-top: 10px;
+}

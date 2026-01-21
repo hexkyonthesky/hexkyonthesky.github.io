@@ -1,105 +1,100 @@
-// ===== Canvas Setup =====
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
 function resizeCanvas() {
-  const maxWidth = window.innerWidth * 0.7;
-  const maxHeight = window.innerHeight * 0.6;
-  canvas.width = Math.min(900, maxWidth);
-  canvas.height = Math.min(500, maxHeight);
+  canvas.width = Math.min(900, window.innerWidth * 0.9);
+  canvas.height = Math.min(500, window.innerHeight * 0.65);
 }
 resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener("resize", resizeCanvas);
 
 let fontSize = 18;
-let items = [];
+let texts = [];
 let redoStack = [];
 let bgImage = null;
 
-// ===== Draw Canvas =====
-function drawCanvas() {
+function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   if (bgImage) {
-    // Scale image proportionally
-    let scale = Math.min(canvas.width / bgImage.width, canvas.height / bgImage.height);
-    let w = bgImage.width * scale;
-    let h = bgImage.height * scale;
-    let x = (canvas.width - w) / 2;
-    let y = (canvas.height - h) / 2;
+    const scale = Math.min(
+      canvas.width / bgImage.width,
+      canvas.height / bgImage.height
+    );
+
+    const w = bgImage.width * scale;
+    const h = bgImage.height * scale;
+    const x = (canvas.width - w) / 2;
+    const y = (canvas.height - h) / 2;
+
     ctx.drawImage(bgImage, x, y, w, h);
   }
 
-  items.forEach((item, idx) => {
-    ctx.font = `${item.size}px Arial`;
+  texts.forEach(t => {
+    ctx.font = `${t.size}px Arial`;
     ctx.fillStyle = "#fff";
-    ctx.fillText(item.text, item.x, item.y);
+    ctx.fillText(t.text, t.x, t.y);
   });
 }
 
-// ===== Add Text =====
 function addText() {
-  const text = document.getElementById('textInput').value.trim();
-  if (!text) return alert("Isi teks dulu!");
-  const newItem = { text: text, size: fontSize, x: 20, y: 40 + items.length * 26 };
-  items.push(newItem);
+  const value = textInput.value.trim();
+  if (!value) return;
+
+  texts.push({
+    text: value,
+    size: fontSize,
+    x: 20,
+    y: 40 + texts.length * 26
+  });
+
   redoStack = [];
-  drawCanvas();
+  draw();
 }
 
-// ===== Undo / Redo =====
 function undo() {
-  if (items.length) redoStack.push(items.pop());
-  drawCanvas();
+  if (texts.length) redoStack.push(texts.pop());
+  draw();
 }
 
 function redo() {
-  if (redoStack.length) items.push(redoStack.pop());
-  drawCanvas();
+  if (redoStack.length) texts.push(redoStack.pop());
+  draw();
 }
 
-// ===== Font Size =====
-function increaseFont() {
+function fontUp() {
   fontSize++;
-  document.getElementById('fontSizeLabel').innerText = fontSize;
+  fontSizeLabel.textContent = fontSize;
 }
 
-function decreaseFont() {
-  fontSize--;
-  if (fontSize < 5) fontSize = 5;
-  document.getElementById('fontSizeLabel').innerText = fontSize;
+function fontDown() {
+  fontSize = Math.max(5, fontSize - 1);
+  fontSizeLabel.textContent = fontSize;
 }
 
-// ===== Background Image =====
-const imageInput = document.getElementById('imageInput');
-
-function pickImage() {
-  imageInput.click();
-}
-
-imageInput.addEventListener('change', (e) => {
+imageInput.addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
+
   const img = new Image();
-  img.onload = () => { bgImage = img; drawCanvas(); }
+  img.onload = () => {
+    bgImage = img;
+    draw();
+  };
   img.src = URL.createObjectURL(file);
 });
 
-// ===== Download =====
-function download() {
-  const link = document.createElement('a');
-  link.download = "ssrp_image.png";
-  link.href = canvas.toDataURL();
-  link.click();
-}
+pickImageBtn.onclick = () => imageInput.click();
+addTextBtn.onclick = addText;
+undoBtn.onclick = undo;
+redoBtn.onclick = redo;
+fsUpBtn.onclick = fontUp;
+fsDownBtn.onclick = fontDown;
+downloadBtn.onclick = () => {
+  const a = document.createElement("a");
+  a.href = canvas.toDataURL("image/png");
+  a.download = "ssrp.png";
+  a.click();
+};
 
-// ===== Event Listeners =====
-document.getElementById('addTextBtn').addEventListener('click', addText);
-document.getElementById('undoBtn').addEventListener('click', undo);
-document.getElementById('redoBtn').addEventListener('click', redo);
-document.getElementById('fsUpBtn').addEventListener('click', increaseFont);
-document.getElementById('fsDownBtn').addEventListener('click', decreaseFont);
-document.getElementById('pickImageBtn').addEventListener('click', pickImage);
-document.getElementById('downloadBtn').addEventListener('click', download);
-
-// ===== Initial Draw =====
-drawCanvas();
+draw();

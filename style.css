@@ -33,7 +33,6 @@ body {
   gap: 14px;
 }
 
-/* INPUT */
 .controls input,
 .controls select {
   padding: 14px;
@@ -43,14 +42,12 @@ body {
   color: #fff;
 }
 
-/* ROW */
 .row {
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
-/* BUTTON */
 button {
   flex: 1;
   padding: 12px;
@@ -68,7 +65,6 @@ button.primary {
 
 button:disabled { opacity: .4 }
 
-/* COLORS */
 .color.white { background: linear-gradient(180deg, #fff, #ccc); color:#000 }
 .color.purple { background: linear-gradient(180deg, #c084ff, #6a00ff) }
 
@@ -81,19 +77,16 @@ button:disabled { opacity: .4 }
   background: radial-gradient(circle, #08000f, #000);
 }
 
-/* 🔒 CANVAS RATIO FIX */
+/* 🔒 CANVAS – NO STRETCH */
 canvas {
-  width: auto;
+  width: min(95vw, 95vh);
   height: auto;
-  max-width: 96%;
-  max-height: 96%;
-  aspect-ratio: 16 / 9;
   background: #000;
   border-radius: 16px;
   box-shadow: 0 0 35px #7a1cff88;
 }
 
-/* FOOTER (ISOLATED) */
+/* FOOTER */
 .footer {
   text-align: center;
   font-size: 11px;
@@ -101,7 +94,7 @@ canvas {
   opacity: .4;
 }
 
-/* 📱 MOBILE — SCALE SAJA */
+/* MOBILE */
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
@@ -114,7 +107,6 @@ canvas {
   }
 
   canvas {
-    max-width: 100%;
-    aspect-ratio: 1 / 1;
+    width: 95vw;
   }
 }

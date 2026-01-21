@@ -1,36 +1,39 @@
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
   background: #0f0f13;
-  color: #fff;
-  font-family: "Inter", sans-serif;
+  color: #ffffff;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
 }
 
-header {
+/* HEADER */
+.header {
   padding: 16px;
   text-align: center;
   background: #16161d;
   border-bottom: 1px solid #222;
 }
 
-header span {
-  display: block;
-  font-size: 14px;
+.header p {
+  margin: 4px 0 0;
+  font-size: 13px;
   opacity: 0.6;
-  margin-top: 4px;
 }
 
+/* APP */
 .app {
   display: flex;
-  height: calc(100vh - 100px);
-  overflow: hidden;
+  height: calc(100vh - 110px);
 }
 
+/* PANEL */
 .panel {
   width: 280px;
   background: #14141c;
-  padding: 20px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -46,6 +49,7 @@ header span {
   font-size: 14px;
 }
 
+/* GROUP */
 .group {
   display: flex;
   gap: 8px;
@@ -53,10 +57,11 @@ header span {
   align-items: center;
 }
 
+/* BUTTON */
 button {
   flex: 1;
   padding: 12px;
-  background: linear-gradient(135deg,#5865f2,#404eed);
+  background: linear-gradient(135deg, #5865f2, #404eed);
   border: none;
   color: #fff;
   border-radius: 8px;
@@ -66,45 +71,42 @@ button {
 }
 
 button:hover {
-  transform: translateY(-2px);
-  opacity: 0.95;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
 }
 
-button:active {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-main {
+/* WORKSPACE */
+.workspace {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
   background: #0d0d11;
 }
 
+/* CANVAS */
 canvas {
   background: #000;
-  border-radius: 12px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.7);
-  max-width: 100%;
-  max-height: 100%;
+  border-radius: 14px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.7);
+  max-width: 95%;
+  max-height: 95%;
 }
 
-footer {
+/* FOOTER */
+.footer {
   text-align: center;
   font-size: 12px;
   padding: 10px;
   opacity: 0.6;
 }
 
-/* Responsive */
-@media(max-width: 768px){
+/* MOBILE */
+@media (max-width: 768px) {
   .app {
     flex-direction: column;
   }
+
   .panel {
     width: 100%;
     border-right: none;

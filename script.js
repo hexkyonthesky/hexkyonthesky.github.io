@@ -1,25 +1,27 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+const addBtn = document.getElementById("addTextBtn");
+
 let bgImage = null;
 let fontSize = 18;
 let texts = [];
 let redoStack = [];
 
-// text layout system
-let startX = 20;
-let startY = 40;
-let lineHeight = 26;
-let columnGap = 40;
-let currentX, currentY;
-let maxTextWidth, maxTextHeight;
+let imgArea = null;
+let cursorX = 0;
+let cursorY = 0;
+const lineGap = 26;
+const colGap = 30;
 
 function resizeCanvas() {
   canvas.width = Math.min(1000, window.innerWidth * 0.9);
   canvas.height = Math.min(600, window.innerHeight * 0.7);
+  draw();
 }
-resizeCanvas();
+
 window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
 
 function draw() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -37,10 +39,7 @@ function draw() {
 
     ctx.drawImage(bgImage, x, y, w, h);
 
-    maxTextWidth = w - 40;
-    maxTextHeight = h - 40;
-    startX = x + 20;
-    startY = y + 30;
+    imgArea = { x, y, w, h };
   }
 
   texts.forEach(t => {
@@ -50,11 +49,13 @@ function draw() {
   });
 }
 
+function resetCursor() {
+  cursorX = imgArea.x + 20;
+  cursorY = imgArea.y + 30;
+}
+
 function addText() {
-  if (!bgImage) {
-    alert("Upload image first!");
-    return;
-  }
+  if (!bgImage) return;
 
   const value = textInput.value.trim();
   if (!value) return;
@@ -62,58 +63,68 @@ function addText() {
   ctx.font = `${fontSize}px Arial`;
   const textWidth = ctx.measureText(value).width;
 
-  if (!currentX) {
-    currentX = startX;
-    currentY = startY;
+  if (cursorY + lineGap > imgArea.y + imgArea.h - 10) {
+    cursorY = imgArea.y + 30;
+    cursorX += textWidth + colGap;
   }
 
-  if (currentY + lineHeight > startY + maxTextHeight) {
-    currentX += textWidth + columnGap;
-    currentY = startY;
-  }
-
-  if (currentX + textWidth > startX + maxTextWidth) {
-    alert("Text area full!");
+  if (cursorX + textWidth > imgArea.x + imgArea.w - 10) {
+    alert("Text area full");
     return;
   }
 
   texts.push({
     text: value,
     size: fontSize,
-    x: currentX,
-    y: currentY
+    x: cursorX,
+    y: cursorY
   });
 
-  currentY += lineHeight;
+  cursorY += lineGap;
   redoStack = [];
   draw();
 }
 
-// controls
-addTextBtn.onclick = addText;
-undoBtn.onclick = () => { if(texts.length) redoStack.push(texts.pop()); draw(); };
-redoBtn.onclick = () => { if(redoStack.length) texts.push(redoStack.pop()); draw(); };
-fsUpBtn.onclick = () => { fontSize++; fontSizeLabel.textContent = fontSize; };
-fsDownBtn.onclick = () => { fontSize=Math.max(6,fontSize-1); fontSizeLabel.textContent=fontSize; };
-
-pickImageBtn.onclick = () => imageInput.click();
+document.getElementById("uploadBtn").onclick = () => imageInput.click();
 
 imageInput.onchange = e => {
   const img = new Image();
   img.onload = () => {
     bgImage = img;
     texts = [];
-    currentX = null;
+    redoStack = [];
+    addBtn.disabled = false;
+    resetCursor();
     draw();
   };
   img.src = URL.createObjectURL(e.target.files[0]);
 };
 
-downloadBtn.onclick = () => {
-  const a = document.createElement("a");
-  a.href = canvas.toDataURL("image/png");
-  a.download = "ssrp_pro.png";
-  a.click();
+addBtn.onclick = addText;
+
+document.getElementById("undoBtn").onclick = () => {
+  if (texts.length) redoStack.push(texts.pop());
+  draw();
 };
 
-draw();
+document.getElementById("redoBtn").onclick = () => {
+  if (redoStack.length) texts.push(redoStack.pop());
+  draw();
+};
+
+document.getElementById("fsUpBtn").onclick = () => {
+  fontSize++;
+  fontSizeLabel.textContent = fontSize;
+};
+
+document.getElementById("fsDownBtn").onclick = () => {
+  fontSize = Math.max(6, fontSize - 1);
+  fontSizeLabel.textContent = fontSize;
+};
+
+document.getElementById("saveBtn").onclick = () => {
+  const a = document.createElement("a");
+  a.href = canvas.toDataURL("image/png");
+  a.download = "hexky_ssrp.png";
+  a.click();
+};

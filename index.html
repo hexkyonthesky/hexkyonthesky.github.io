@@ -19,21 +19,21 @@
     <input id="textInput" placeholder="*John takes out his phone">
 
     <div class="group">
-      <button id="addText">➕ Add</button>
-      <button id="undo">↩</button>
-      <button id="redo">↪</button>
+      <button id="addTextBtn">➕ Add</button>
+      <button id="undoBtn">↩ Undo</button>
+      <button id="redoBtn">↪ Redo</button>
     </div>
 
     <div class="group">
       <label>Font Size</label>
-      <button id="fsUp">＋</button>
-      <button id="fsDown">－</button>
+      <button id="fsUpBtn">＋</button>
+      <button id="fsDownBtn">－</button>
+      <span id="fontSizeLabel">18</span>
     </div>
 
     <div class="group">
-      <button id="pickImage">🖼 Background</button>
-      <button id="download">💾 Save</button>
-      <button id="upload">☁ Upload</button>
+      <button id="pickImageBtn">🖼 Background</button>
+      <button id="downloadBtn">💾 Save</button>
     </div>
 
     <input type="file" id="imageInput" hidden>
@@ -45,16 +45,10 @@
 
 </div>
 
-<div id="result" class="result" hidden>
-  <input id="resultLink" readonly>
-  <button onclick="copy()">Copy</button>
-</div>
-
 <footer>
 © 2026 Hengkiaaa — SSRP Editor
 </footer>
 
 <script src="script.js"></script>
-<script src="imgur.js"></script>
 </body>
 </html>

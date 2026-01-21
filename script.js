@@ -1,50 +1,91 @@
+// ===== Canvas Setup =====
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-canvas.width = 900;
-canvas.height = 500;
+canvas.width = Math.min(900, window.innerWidth * 0.7);
+canvas.height = Math.min(500, window.innerHeight * 0.6);
 
 let fontSize = 18;
 let items = [];
 let redoStack = [];
-let bg = null;
+let bgImage = null;
 
-function render() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  if(bg) ctx.drawImage(bg,0,0,canvas.width,canvas.height);
-  items.forEach(i=>{
-    ctx.font = `${i.size}px Arial`;
+// ===== Draw Canvas =====
+function drawCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (bgImage) ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+
+  items.forEach((item, idx) => {
+    ctx.font = `${item.size}px Arial`;
     ctx.fillStyle = "#fff";
-    ctx.fillText(i.text,i.x,i.y);
+    ctx.fillText(item.text, item.x, item.y);
   });
 }
 
+// ===== Add Text =====
 function addText() {
-  const t = textInput.value;
-  if(!t) return;
-  items.push({text:t,size:fontSize,x:20,y:40+items.length*26});
-  redoStack=[];
-  render();
+  const text = document.getElementById('textInput').value.trim();
+  if (!text) return alert("Isi teks dulu!");
+  const newItem = { text: text, size: fontSize, x: 20, y: 40 + items.length * 26 };
+  items.push(newItem);
+  redoStack = [];
+  drawCanvas();
 }
 
-addText.onclick = addText;
-undo.onclick = ()=>{ if(items.length) redoStack.push(items.pop()); render(); }
-redo.onclick = ()=>{ if(redoStack.length) items.push(redoStack.pop()); render(); }
-fsUp.onclick = ()=>{fontSize++;};
-fsDown.onclick = ()=>{fontSize--;};
+// ===== Undo / Redo =====
+function undo() {
+  if (items.length) redoStack.push(items.pop());
+  drawCanvas();
+}
 
-pickImage.onclick = ()=>imageInput.click();
-imageInput.onchange = e=>{
+function redo() {
+  if (redoStack.length) items.push(redoStack.pop());
+  drawCanvas();
+}
+
+// ===== Font Size =====
+function increaseFont() {
+  fontSize++;
+  document.getElementById('fontSizeLabel').innerText = fontSize;
+}
+
+function decreaseFont() {
+  fontSize--;
+  if (fontSize < 5) fontSize = 5;
+  document.getElementById('fontSizeLabel').innerText = fontSize;
+}
+
+// ===== Background Image =====
+const imageInput = document.getElementById('imageInput');
+
+function pickImage() {
+  imageInput.click();
+}
+
+imageInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
   const img = new Image();
-  img.onload=()=>{bg=img;render();}
-  img.src=URL.createObjectURL(e.target.files[0]);
-};
+  img.onload = () => { bgImage = img; drawCanvas(); }
+  img.src = URL.createObjectURL(file);
+});
 
-download.onclick = ()=>{
-  const a=document.createElement('a');
-  a.href=canvas.toDataURL();
-  a.download="ssrp.png";
-  a.click();
-};
+// ===== Download =====
+function download() {
+  const link = document.createElement('a');
+  link.download = "ssrp_image.png";
+  link.href = canvas.toDataURL();
+  link.click();
+}
 
-render();
+// ===== Event Listeners =====
+document.getElementById('addTextBtn').addEventListener('click', addText);
+document.getElementById('undoBtn').addEventListener('click', undo);
+document.getElementById('redoBtn').addEventListener('click', redo);
+document.getElementById('fsUpBtn').addEventListener('click', increaseFont);
+document.getElementById('fsDownBtn').addEventListener('click', decreaseFont);
+document.getElementById('pickImageBtn').addEventListener('click', pickImage);
+document.getElementById('downloadBtn').addEventListener('click', download);
+
+// ===== Initial Draw =====
+drawCanvas();

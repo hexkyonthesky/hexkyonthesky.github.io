@@ -1,113 +1,105 @@
-* { box-sizing: border-box; }
+// ===== Canvas Setup =====
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
-body {
-  margin: 0;
-  background: #0f0f13;
-  color: #fff;
-  font-family: "Inter", sans-serif;
+function resizeCanvas() {
+  const maxWidth = window.innerWidth * 0.7;
+  const maxHeight = window.innerHeight * 0.6;
+  canvas.width = Math.min(900, maxWidth);
+  canvas.height = Math.min(500, maxHeight);
 }
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-header {
-  padding: 16px;
-  text-align: center;
-  background: #16161d;
-  border-bottom: 1px solid #222;
-}
+let fontSize = 18;
+let items = [];
+let redoStack = [];
+let bgImage = null;
 
-header span {
-  display: block;
-  font-size: 14px;
-  opacity: 0.6;
-  margin-top: 4px;
-}
-
-.app {
-  display: flex;
-  height: calc(100vh - 100px);
-  overflow: hidden;
-}
-
-.panel {
-  width: 280px;
-  background: #14141c;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  border-right: 1px solid #222;
-}
-
-.panel input {
-  padding: 12px;
-  background: #1c1c25;
-  border: none;
-  color: #fff;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-.group {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-button {
-  flex: 1;
-  padding: 12px;
-  background: linear-gradient(135deg,#5865f2,#404eed);
-  border: none;
-  color: #fff;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-button:hover {
-  transform: translateY(-2px);
-  opacity: 0.95;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-}
-
-button:active {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-  background: #0d0d11;
-}
-
-canvas {
-  background: #000;
-  border-radius: 12px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.7);
-  max-width: 100%;
-  max-height: 100%;
-}
-
-footer {
-  text-align: center;
-  font-size: 12px;
-  padding: 10px;
-  opacity: 0.6;
-}
-
-/* Responsive */
-@media(max-width: 768px){
-  .app {
-    flex-direction: column;
+// ===== Draw Canvas =====
+function drawCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (bgImage) {
+    // Scale image proportionally
+    let scale = Math.min(canvas.width / bgImage.width, canvas.height / bgImage.height);
+    let w = bgImage.width * scale;
+    let h = bgImage.height * scale;
+    let x = (canvas.width - w) / 2;
+    let y = (canvas.height - h) / 2;
+    ctx.drawImage(bgImage, x, y, w, h);
   }
-  .panel {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #222;
-  }
+
+  items.forEach((item, idx) => {
+    ctx.font = `${item.size}px Arial`;
+    ctx.fillStyle = "#fff";
+    ctx.fillText(item.text, item.x, item.y);
+  });
 }
+
+// ===== Add Text =====
+function addText() {
+  const text = document.getElementById('textInput').value.trim();
+  if (!text) return alert("Isi teks dulu!");
+  const newItem = { text: text, size: fontSize, x: 20, y: 40 + items.length * 26 };
+  items.push(newItem);
+  redoStack = [];
+  drawCanvas();
+}
+
+// ===== Undo / Redo =====
+function undo() {
+  if (items.length) redoStack.push(items.pop());
+  drawCanvas();
+}
+
+function redo() {
+  if (redoStack.length) items.push(redoStack.pop());
+  drawCanvas();
+}
+
+// ===== Font Size =====
+function increaseFont() {
+  fontSize++;
+  document.getElementById('fontSizeLabel').innerText = fontSize;
+}
+
+function decreaseFont() {
+  fontSize--;
+  if (fontSize < 5) fontSize = 5;
+  document.getElementById('fontSizeLabel').innerText = fontSize;
+}
+
+// ===== Background Image =====
+const imageInput = document.getElementById('imageInput');
+
+function pickImage() {
+  imageInput.click();
+}
+
+imageInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => { bgImage = img; drawCanvas(); }
+  img.src = URL.createObjectURL(file);
+});
+
+// ===== Download =====
+function download() {
+  const link = document.createElement('a');
+  link.download = "ssrp_image.png";
+  link.href = canvas.toDataURL();
+  link.click();
+}
+
+// ===== Event Listeners =====
+document.getElementById('addTextBtn').addEventListener('click', addText);
+document.getElementById('undoBtn').addEventListener('click', undo);
+document.getElementById('redoBtn').addEventListener('click', redo);
+document.getElementById('fsUpBtn').addEventListener('click', increaseFont);
+document.getElementById('fsDownBtn').addEventListener('click', decreaseFont);
+document.getElementById('pickImageBtn').addEventListener('click', pickImage);
+document.getElementById('downloadBtn').addEventListener('click', download);
+
+// ===== Initial Draw =====
+drawCanvas();

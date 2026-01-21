@@ -16,7 +16,7 @@
 <div class="container">
 
   <aside class="controls">
-    <input id="textInput" placeholder="*John takes out his phone" />
+    <input id="textInput" placeholder="*John takes out his phone">
 
     <div class="row">
       <button id="addTextBtn" disabled class="primary">Add</button>
@@ -29,6 +29,7 @@
       <button id="fsDownBtn">-</button>
       <strong id="fontSizeLabel">18</strong>
       <button id="fsUpBtn">+</button>
+      <button id="boldBtn">B</button>
     </div>
 
     <div class="row">
@@ -36,11 +37,12 @@
       <button id="purpleBtn" class="color purple">/me /do</button>
     </div>
 
-    <div class="row toggle">
-      <label>
-        <input type="checkbox" id="cropToggle">
-        Center Crop
-      </label>
+    <div class="row">
+      <select id="scalePreset">
+        <option value="fit">Fit (Original)</option>
+        <option value="fill">Fill</option>
+        <option value="crop">Center Crop</option>
+      </select>
     </div>
 
     <div class="row">
@@ -49,8 +51,6 @@
     </div>
 
     <input type="file" id="imageInput" accept="image/*" hidden>
-
-    <p class="hint">Upload image before adding text</p>
   </aside>
 
   <main class="stage">
@@ -59,7 +59,9 @@
 
 </div>
 
-<footer class="footer">© 2026 SSRP Editor</footer>
+<footer class="footer">
+© 2026 SSRP Editor
+</footer>
 
 <script src="script.js"></script>
 </body>

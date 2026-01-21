@@ -2,13 +2,15 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 const addBtn = document.getElementById("addTextBtn");
+const textInput = document.getElementById("textInput");
 
 let bgImage = null;
+let imgArea = null;
+
 let fontSize = 18;
 let texts = [];
 let redoStack = [];
 
-let imgArea = null;
 let cursorX = 0;
 let cursorY = 0;
 const lineGap = 26;
@@ -19,27 +21,20 @@ function resizeCanvas() {
   canvas.height = Math.min(600, window.innerHeight * 0.7);
   draw();
 }
-
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
 function draw() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (bgImage) {
-    const scale = Math.min(
-      canvas.width / bgImage.width,
-      canvas.height / bgImage.height
+  if (bgImage && imgArea) {
+    ctx.drawImage(
+      bgImage,
+      imgArea.x,
+      imgArea.y,
+      imgArea.w,
+      imgArea.h
     );
-
-    const w = bgImage.width * scale;
-    const h = bgImage.height * scale;
-    const x = (canvas.width - w) / 2;
-    const y = (canvas.height - h) / 2;
-
-    ctx.drawImage(bgImage, x, y, w, h);
-
-    imgArea = { x, y, w, h };
   }
 
   texts.forEach(t => {
@@ -49,13 +44,25 @@ function draw() {
   });
 }
 
-function resetCursor() {
-  cursorX = imgArea.x + 20;
-  cursorY = imgArea.y + 30;
+function setupImage(img) {
+  const scale = Math.min(
+    canvas.width / img.width,
+    canvas.height / img.height
+  );
+
+  const w = img.width * scale;
+  const h = img.height * scale;
+  const x = (canvas.width - w) / 2;
+  const y = (canvas.height - h) / 2;
+
+  imgArea = { x, y, w, h };
+
+  cursorX = x + 20;
+  cursorY = y + 30;
 }
 
 function addText() {
-  if (!bgImage) return;
+  if (!bgImage || !imgArea) return;
 
   const value = textInput.value.trim();
   if (!value) return;
@@ -85,19 +92,23 @@ function addText() {
   draw();
 }
 
-document.getElementById("uploadBtn").onclick = () => imageInput.click();
+document.getElementById("uploadBtn").onclick = () =>
+  document.getElementById("imageInput").click();
 
-imageInput.onchange = e => {
+document.getElementById("imageInput").onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+
   const img = new Image();
   img.onload = () => {
     bgImage = img;
     texts = [];
     redoStack = [];
+    setupImage(img);
     addBtn.disabled = false;
-    resetCursor();
     draw();
   };
-  img.src = URL.createObjectURL(e.target.files[0]);
+  img.src = URL.createObjectURL(file);
 };
 
 addBtn.onclick = addText;
@@ -114,17 +125,17 @@ document.getElementById("redoBtn").onclick = () => {
 
 document.getElementById("fsUpBtn").onclick = () => {
   fontSize++;
-  fontSizeLabel.textContent = fontSize;
+  document.getElementById("fontSizeLabel").textContent = fontSize;
 };
 
 document.getElementById("fsDownBtn").onclick = () => {
   fontSize = Math.max(6, fontSize - 1);
-  fontSizeLabel.textContent = fontSize;
+  document.getElementById("fontSizeLabel").textContent = fontSize;
 };
 
 document.getElementById("saveBtn").onclick = () => {
   const a = document.createElement("a");
   a.href = canvas.toDataURL("image/png");
-  a.download = "hexky_ssrp.png";
+  a.download = "ssrp.png";
   a.click();
 };

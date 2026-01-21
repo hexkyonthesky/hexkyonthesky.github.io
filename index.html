@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>SSRP Editor</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -13,15 +13,21 @@
   <span>Professional Roleplay Screenshot Tool</span>
 </header>
 
-<div class="container">
+<div class="app">
+
+  <main class="stage">
+    <canvas id="canvas"></canvas>
+  </main>
 
   <aside class="controls">
-    <input id="textInput" placeholder="*John takes out his phone" />
+    <input id="textInput" placeholder="*John takes out his phone">
 
-    <div class="row">
+    <div class="grid">
       <button id="addTextBtn" disabled class="primary">Add</button>
       <button id="undoBtn">Undo</button>
       <button id="redoBtn">Redo</button>
+      <button id="uploadBtn">Upload</button>
+      <button id="saveBtn">Save</button>
     </div>
 
     <div class="row">
@@ -43,19 +49,8 @@
       </label>
     </div>
 
-    <div class="row">
-      <button id="uploadBtn">Upload Image</button>
-      <button id="saveBtn">Save PNG</button>
-    </div>
-
     <input type="file" id="imageInput" accept="image/*" hidden>
-
-    <p class="hint">Upload image before adding text</p>
   </aside>
-
-  <main class="stage">
-    <canvas id="canvas"></canvas>
-  </main>
 
 </div>
 

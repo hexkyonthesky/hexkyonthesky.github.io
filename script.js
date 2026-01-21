@@ -1,12 +1,10 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-/* 🔒 INTERNAL RESOLUTION FIX */
-const BASE_WIDTH = 1080;
-const BASE_HEIGHT = 1080;
-
-canvas.width = BASE_WIDTH;
-canvas.height = BASE_HEIGHT;
+/* 🔒 CANVAS ASLI */
+const SIZE = 1080;
+canvas.width = SIZE;
+canvas.height = SIZE;
 
 let bgImage = null;
 let scaleMode = "fit";
@@ -18,50 +16,44 @@ let currentColor = "#ffffff";
 let texts = [];
 let redoStack = [];
 
-/* CURSOR RELATIF (0–1) */
-let cursorX = 0.05;
-let cursorY = 0.08;
-const lineGap = 0.035;
-const colGap = 0.04;
+let cursorX = 40;
+let cursorY = 80;
+const lineGap = 30;
+const colGap = 260;
 
 function draw() {
-  ctx.clearRect(0,0,BASE_WIDTH,BASE_HEIGHT);
+  ctx.clearRect(0,0,SIZE,SIZE);
 
   if (bgImage) drawImage();
 
   texts.forEach(t => {
     ctx.font = `${t.bold ? "bold" : ""} ${t.size}px Arial`;
     ctx.fillStyle = t.color;
-    ctx.fillText(
-      t.text,
-      t.x * BASE_WIDTH,
-      t.y * BASE_HEIGHT
-    );
+    ctx.fillText(t.text, t.x, t.y);
   });
 }
 
 function drawImage() {
+  let sx = 0, sy = 0;
   let sw = bgImage.width;
   let sh = bgImage.height;
-  let sx = 0, sy = 0;
 
   const imgRatio = sw / sh;
-  const canvasRatio = BASE_WIDTH / BASE_HEIGHT;
 
   if (scaleMode === "crop") {
-    if (imgRatio > canvasRatio) {
-      sw = sh * canvasRatio;
+    if (imgRatio > 1) {
+      sw = sh;
       sx = (bgImage.width - sw) / 2;
     } else {
-      sh = sw / canvasRatio;
+      sh = sw;
       sy = (bgImage.height - sh) / 2;
     }
   }
 
-  ctx.drawImage(bgImage, sx, sy, sw, sh, 0, 0, BASE_WIDTH, BASE_HEIGHT);
+  ctx.drawImage(bgImage, sx, sy, sw, sh, 0, 0, SIZE, SIZE);
 
-  cursorX = 0.05;
-  cursorY = 0.08;
+  cursorX = 40;
+  cursorY = 80;
 }
 
 function addText() {
@@ -79,8 +71,8 @@ function addText() {
 
   cursorY += lineGap;
 
-  if (cursorY > 0.95) {
-    cursorY = 0.08;
+  if (cursorY > SIZE - 60) {
+    cursorY = 80;
     cursorX += colGap;
   }
 
@@ -95,6 +87,7 @@ imageInput.onchange = e => {
   img.onload = () => {
     bgImage = img;
     texts = [];
+    redoStack = [];
     draw();
     addTextBtn.disabled = false;
   };
@@ -103,15 +96,22 @@ imageInput.onchange = e => {
 
 addTextBtn.onclick = addText;
 
-undoBtn.onclick = () => { if(texts.length) redoStack.push(texts.pop()); draw(); };
-redoBtn.onclick = () => { if(redoStack.length) texts.push(redoStack.pop()); draw(); };
+undoBtn.onclick = () => {
+  if (texts.length) redoStack.push(texts.pop());
+  draw();
+};
+
+redoBtn.onclick = () => {
+  if (redoStack.length) texts.push(redoStack.pop());
+  draw();
+};
 
 fsUpBtn.onclick = () => { fontSize++; fontSizeLabel.textContent = fontSize };
 fsDownBtn.onclick = () => { fontSize--; fontSizeLabel.textContent = fontSize };
 
 boldBtn.onclick = () => bold = !bold;
 whiteBtn.onclick = () => currentColor = "#ffffff";
-purpleBtn.onclick = () => currentColor = "#c084ff";
+purpleBtn.onclick = () => currentColor = "#8b5cff";
 
 scalePreset.onchange = e => {
   scaleMode = e.target.value;

@@ -62,26 +62,26 @@ function handleImageUpload(file) {
 }
 
 function drawCanvas() {
-  ctx.fillStyle = "#1e1e1e";
+  ctx.fillStyle = "#12121c";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   if (!imageLoaded) {
-    ctx.font = '20px Arial';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.font = '18px Inter';
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
     ctx.textAlign = 'center';
-    ctx.fillText('Klik atau drop gambar di sini', canvas.width / 2, canvas.height / 2);
+    ctx.fillText('Click to select an image', canvas.width / 2, canvas.height / 2);
     ctx.textAlign = 'left';
   } else {
     ctx.drawImage(image, imagePos.x, imagePos.y, imageDrawSize.width, imageDrawSize.height);
   }
 
-  ctx.font = `bold ${fontSize}px Calibri`;
+  ctx.font = `bold ${fontSize}px Inter`;
   ctx.lineWidth = 2;
 
   texts.forEach((textObj) => {
     const isActionText = textObj.text.startsWith("*");
     ctx.strokeStyle = 'black';
-    ctx.fillStyle = isActionText ? "#C2A2DA" : "#FFFFFF";
+    ctx.fillStyle = isActionText ? "#cfa8ff" : "#ffffff";
     ctx.shadowColor = "black";
     ctx.shadowBlur = 4;
     ctx.shadowOffsetX = 2;
@@ -143,74 +143,31 @@ function downloadImage() {
   link.click();
 }
 
-async function uploadToImgur() {
-  const linkContainer = document.getElementById('imgurLinkContainer');
-  const linkInput = document.getElementById('imgurLinkInput');
-
-  drawCanvas();
-  linkInput.value = "Uploading to Imgur...";
-  linkContainer.style.display = 'block';
-
-  try {
-    const imageData = canvas.toDataURL('image/png').split(',')[1];
-    const response = await fetch('https://api.imgur.com/3/image', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Client-ID 6b1da49ab5fce27',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: `image=${encodeURIComponent(imageData)}`
-    });
-
-    const result = await response.json();
-    linkInput.value = result.success ? `[img]${result.data.link}[/img]` : 'Upload failed';
-  } catch (error) {
-    linkInput.value = `Error: ${error.message}`;
-  }
-}
-
-function copyImgurLink() {
-  const input = document.getElementById('imgurLinkInput');
-  input.select();
-  document.execCommand('copy');
-
-  const btn = document.querySelector('#imgurLinkContainer button:first-of-type');
-  btn.textContent = 'Copied!';
-  setTimeout(() => btn.textContent = 'Copy', 2000);
-}
-
-function closeImgurLink() {
-  document.getElementById('imgurLinkContainer').style.display = 'none';
-}
-
-// === MOUSE DRAG (Hanya Horizontal) ===
+/* === DRAG IMAGE (HORIZONTAL ONLY) === */
 canvas.addEventListener('mousedown', (e) => {
   if (!imageLoaded) return;
-
   const rect = canvas.getBoundingClientRect();
-  const mouseX = e.clientX - rect.left;
-  const mouseY = e.clientY - rect.top;
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
 
-  if (mouseX >= imagePos.x &&
-      mouseX <= imagePos.x + imageDrawSize.width &&
-      mouseY >= imagePos.y &&
-      mouseY <= imagePos.y + imageDrawSize.height) {
+  if (
+    x >= imagePos.x &&
+    x <= imagePos.x + imageDrawSize.width &&
+    y >= imagePos.y &&
+    y <= imagePos.y + imageDrawSize.height
+  ) {
     imagePos.dragging = true;
-    imagePos.dragOffset = {
-      x: mouseX - imagePos.x,
-      y: mouseY - imagePos.y
-    };
+    imagePos.dragOffset.x = x - imagePos.x;
     canvas.style.cursor = 'grabbing';
   }
 });
 
 canvas.addEventListener('mousemove', (e) => {
   if (!imageLoaded || !imagePos.dragging) return;
-
   const rect = canvas.getBoundingClientRect();
-  const mouseX = e.clientX - rect.left;
+  const x = e.clientX - rect.left;
 
-  let newX = mouseX - imagePos.dragOffset.x;
+  let newX = x - imagePos.dragOffset.x;
   newX = Math.min(0, Math.max(canvas.width - imageDrawSize.width, newX));
 
   imagePos.x = newX;
@@ -227,47 +184,7 @@ canvas.addEventListener('mouseleave', () => {
   canvas.style.cursor = 'grab';
 });
 
-// === TOUCH DRAG (Hanya Horizontal) ===
-canvas.addEventListener('touchstart', (e) => {
-  if (!imageLoaded) return;
-
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
-
-  if (x >= imagePos.x &&
-      x <= imagePos.x + imageDrawSize.width &&
-      y >= imagePos.y &&
-      y <= imagePos.y + imageDrawSize.height) {
-    imagePos.dragging = true;
-    imagePos.dragOffset = {
-      x: x - imagePos.x,
-      y: y - imagePos.y
-    };
-  }
-});
-
-canvas.addEventListener('touchmove', (e) => {
-  if (!imageLoaded || !imagePos.dragging) return;
-
-  e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  const touchX = touch.clientX - rect.left;
-
-  let newX = touchX - imagePos.dragOffset.x;
-  newX = Math.min(0, Math.max(canvas.width - imageDrawSize.width, newX));
-
-  imagePos.x = newX;
-  drawCanvas();
-}, { passive: false });
-
-canvas.addEventListener('touchend', () => {
-  imagePos.dragging = false;
-});
-
-// === ENTER KEY ===
+/* === ENTER KEY === */
 document.getElementById('textInput').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();

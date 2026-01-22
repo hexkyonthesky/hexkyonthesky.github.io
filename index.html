@@ -1,68 +1,56 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SSRP Editor</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SSRP EDITOR</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖼️</text></svg>">
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    window.onload = () => {
+      const canvas = document.getElementById('canvas');
+      if (/Mobi|Android/i.test(navigator.userAgent)) {
+        canvas.width = window.innerWidth * 0.9;
+        canvas.height = window.innerHeight * 0.5;
+        document.body.classList.add('mobile');
+      } else {
+        canvas.width = 800;
+        canvas.height = 600;
+      }
+      drawCanvas();
+    };
+  </script>
 </head>
 <body>
+  <h1 class="title">🎨 SSRP Editor</h1>
+  
+  <div class="controls">
+    <input type="text" id="textInput" placeholder="✏️ Ketik teks (*action)" />
+    <button onclick="addText()">➕ Tambahkan</button>
+    <button onclick="undoAction()">↩️ Undo</button>
+    <button onclick="redoAction()">↪️ Redo</button><br>
 
-<header class="header">
-  <h1>SSRP Editor</h1>
-  <span>Professional Roleplay Screenshot Tool</span>
-</header>
+    <label>Ukuran: <span id="fontSizeLabel">17</span>px</label>
+    <button onclick="changeFontSize(1)">🔼</button>
+    <button onclick="changeFontSize(-1)">🔽</button>
 
-<div class="container">
+    <button onclick="document.getElementById('imageInput').click()">🖼️ Pilih Gambar</button>
+    <button onclick="downloadImage()">💾 Simpan</button>
+    <button onclick="uploadToImgur()">☁️ Upload ke Imgur</button>
+  </div>
 
-  <aside class="controls">
-    <input id="textInput" placeholder="*John takes out his phone">
+  <canvas id="canvas"></canvas>
 
-    <div class="row">
-      <button id="addTextBtn" disabled class="primary">Add</button>
-      <button id="undoBtn">Undo</button>
-      <button id="redoBtn">Redo</button>
-    </div>
+  <div id="imgurLinkContainer" class="imgur-link-container" style="display: none;">
+    <input type="text" id="imgurLinkInput" readonly />
+    <button onclick="copyImgurLink()">Copy</button>
+    <button onclick="closeImgurLink()">×</button>
+  </div>
 
-    <div class="row">
-      <span>Font</span>
-      <button id="fsDownBtn">-</button>
-      <strong id="fontSizeLabel">18</strong>
-      <button id="fsUpBtn">+</button>
-      <button id="boldBtn">B</button>
-    </div>
+  <div class="watermark">© Dimas Mardiansyah & Rohiimatt </div>
 
-    <div class="row">
-      <button id="whiteBtn" class="color white">Says</button>
-      <button id="purpleBtn" class="color purple">/me /do</button>
-    </div>
+  <input type="file" id="imageInput" accept="image/*" style="display: none;" />
 
-    <div class="row">
-      <select id="scalePreset">
-        <option value="fit">Fit</option>
-        <option value="crop">Center Crop</option>
-      </select>
-    </div>
-
-    <div class="row">
-      <button id="uploadBtn">Upload Image</button>
-      <button id="saveBtn">Save PNG</button>
-    </div>
-
-    <input type="file" id="imageInput" accept="image/*" hidden>
-  </aside>
-
-  <main class="stage">
-    <!-- 🔒 KOTAK PENGUNCI -->
-    <div class="canvas-box">
-      <canvas id="canvas"></canvas>
-    </div>
-  </main>
-
-</div>
-
-<footer class="footer">© 2026 SSRP Editor</footer>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

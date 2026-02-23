@@ -61,6 +61,75 @@ function handleImageUpload(file) {
   reader.readAsDataURL(file);
 }
 
+/* ============================================================
+   COLOR TAG PARSER
+   Format: {rrggbb} atau {rgb} di dalam teks
+   Contoh: "Halo {ff0000}merah {00ff00}hijau {ffffff}putih"
+   ============================================================ */
+
+/**
+ * Pecah teks menjadi segmen-segmen { text, color }
+ * berdasarkan tag warna {hex}.
+ */
+function parseColorSegments(text, defaultColor) {
+  const colorTagRegex = /\{([0-9a-fA-F]{3,8})\}/g;
+  const segments = [];
+  let lastIndex = 0;
+  let currentColor = defaultColor;
+  let match;
+
+  while ((match = colorTagRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ text: text.slice(lastIndex, match.index), color: currentColor });
+    }
+    currentColor = '#' + match[1];
+    lastIndex = colorTagRegex.lastIndex;
+  }
+
+  if (lastIndex < text.length) {
+    segments.push({ text: text.slice(lastIndex), color: currentColor });
+  }
+
+  // Kalau tidak ada tag sama sekali
+  if (segments.length === 0) {
+    segments.push({ text, color: defaultColor });
+  }
+
+  return segments;
+}
+
+/**
+ * Gambar teks multicolor ke canvas.
+ * Kembalikan lebar total teks yang digambar.
+ */
+function drawColoredText(ctx, text, x, y, defaultColor) {
+  const segments = parseColorSegments(text, defaultColor);
+  let cursorX = x;
+
+  for (const seg of segments) {
+    // Stroke (outline hitam) dulu
+    ctx.strokeStyle = 'black';
+    ctx.strokeText(seg.text, cursorX, y);
+    // Fill warna
+    ctx.fillStyle = seg.color;
+    ctx.fillText(seg.text, cursorX, y);
+
+    cursorX += ctx.measureText(seg.text).width;
+  }
+
+  return cursorX - x;
+}
+
+/**
+ * Ukur lebar teks tanpa tag warna (untuk keperluan layout).
+ */
+function measurePlainText(ctx, text) {
+  const stripped = text.replace(/\{[0-9a-fA-F]{3,8}\}/g, '');
+  return ctx.measureText(stripped).width;
+}
+
+/* ============================================================ */
+
 function drawCanvas() {
   ctx.fillStyle = "#12121c";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -80,16 +149,16 @@ function drawCanvas() {
 
   texts.forEach((textObj) => {
     const isActionText = textObj.text.startsWith("*");
-    ctx.strokeStyle = 'black';
-    ctx.fillStyle = isActionText ? "#cfa8ff" : "#ffffff";
+    // Warna default: ungu untuk *action, putih untuk dialog
+    const defaultColor = isActionText ? "#cfa8ff" : "#ffffff";
+
     ctx.shadowColor = "black";
     ctx.shadowBlur = 4;
     ctx.shadowOffsetX = 2;
     ctx.shadowOffsetY = 2;
 
     textObj.text.split('\n').forEach((line, i) => {
-      ctx.strokeText(line, textObj.x, textObj.y + (i * lineHeight));
-      ctx.fillText(line, textObj.x, textObj.y + (i * lineHeight));
+      drawColoredText(ctx, line, textObj.x, textObj.y + (i * lineHeight), defaultColor);
     });
 
     ctx.shadowColor = "transparent";
